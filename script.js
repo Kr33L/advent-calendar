@@ -1,18 +1,20 @@
 const select = document.querySelector("select");
-const dates = document.querySelectorAll("option");
+const selectDate = document.querySelectorAll("option");
 const windows = document.querySelectorAll(".window");
 
-const enableWindow = (i) => (windows[i].disabled = false);
-const disableWindow = (i) => (windows[i].disabled = true);
+const toggleWindow = (index, bool) => (windows[index].disabled = bool);
 
-function toggleWindow(currentSelection) {
-	for (let i = 0; i < dates.length; i++) {
-		if (currentSelection === dates[i].value) {
-			enableWindow(i);
-		} else {
-			disableWindow(i);
-		}
-	}
+// working name...
+function linkWindowToDate(currentSelection, newSelection) {
+	selectDate.forEach((date, index) => {
+		toggleWindow(index, true);
+		if (currentSelection.value === newSelection[index].value) toggleWindow(index, false);
+	});
 }
 
-select.addEventListener("change", () => toggleWindow(select.value));
+// get a random youtube video from a christmas playlist (and lock it in local storage?)
+// function getRandomVideo() {}
+// get a random christmas image (and lock it in local storage?)
+// function getRandomImage() {}
+
+select.addEventListener("change", () => linkWindowToDate(select, selectDate));
