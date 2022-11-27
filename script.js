@@ -1,20 +1,18 @@
 const select = document.querySelector("select");
-const selectDate = document.querySelectorAll("option");
-const windows = document.querySelectorAll(".window");
+const options = document.querySelectorAll("option");
+const buttons = document.querySelectorAll("button");
 
-const toggleWindow = (index, bool) => (windows[index].disabled = bool);
+//append suffix to each option
+function appendSuffix() {
+	options.forEach((option) => {
+		let suffix = "";
+		suffix = "th";
+		if (option.value == 1 || option.value == 21) suffix = "st";
+		if (option.value == 2 || option.value == 22) suffix = "nd";
+		if (option.value == 3 || option.value == 23) suffix = "rd";
 
-// working name...
-function linkWindowToDate(currentSelection, newSelection) {
-	selectDate.forEach((date, index) => {
-		toggleWindow(index, true);
-		if (currentSelection.value === newSelection[index].value) toggleWindow(index, false);
+		option.textContent = option.value + suffix + " of December";
 	});
 }
 
-// get a random youtube video from a christmas playlist (and lock it in local storage?)
-// function getRandomVideo() {}
-// get a random christmas image (and lock it in local storage?)
-// function getRandomImage() {}
-
-select.addEventListener("change", () => linkWindowToDate(select, selectDate));
+appendSuffix();
