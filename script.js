@@ -1,8 +1,28 @@
 const select = document.querySelector("select");
 const options = document.querySelectorAll("option");
 const buttons = document.querySelectorAll("button");
-const optionsData = document.querySelectorAll("data-option");
-const buttonsData = document.querySelectorAll("data-button");
+const KEY = "s9vuPN6Q6PqaIyKPA4cdBFgXlWL5zwrP";
+const API_URL = `https://api.giphy.com/v1/gifs/search?api_key=${KEY}&q=christmas&limit=25`;
+
+async function getGif() {
+	const response = await fetch(`${API_URL}`);
+	const data = await response.json();
+	const gif = data.data[Math.floor(Math.random() * data.data.length)].images.original.url;
+	return gif;
+}
+
+function appendGif() {
+	const gif = getGif();
+	buttons.forEach((button) => {
+		button.style.display = "none";
+	});
+
+	gif.then((url) => {
+		const img = document.createElement("img");
+		img.src = url;
+		document.body.appendChild(img);
+	});
+}
 
 function appendSuffix() {
 	options.forEach((option) => {
@@ -28,4 +48,8 @@ appendSuffix();
 select.addEventListener("change", () => {
 	select.dataset.select = select.value[0];
 	matchButtons();
+});
+
+buttons.forEach((button) => {
+	button.addEventListener("click", appendGif);
 });
