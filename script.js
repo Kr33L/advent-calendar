@@ -2,29 +2,36 @@ const select = document.querySelector("select");
 const options = document.querySelectorAll("option");
 const buttons = document.querySelectorAll("button");
 const KEY = "s9vuPN6Q6PqaIyKPA4cdBFgXlWL5zwrP";
-const API_URL = `https://api.giphy.com/v1/gifs/search?api_key=${KEY}&q=christmas&limit=25`;
+const API_URL = `https://api.giphy.com/v1/gifs/search?api_key=${KEY}&q=christmas&limit=200`;
+
+// <==== MAIN FUNCTIONS ====>
 
 async function getGif() {
+	if (localStorage.getItem("giphyStored")) return;
 	const response = await fetch(`${API_URL}`);
 	const data = await response.json();
-	const gif = data.data[Math.floor(Math.random() * data.data.length)].images.original.url;
-	return gif;
+	localStorage.setItem("giphyStored", JSON.stringify(data));
 }
 
-function appendGif() {
-	const gif = getGif();
+function appendGif(e) {
+	const storedGifs = JSON.parse(localStorage.getItem("giphyStored"));
+	const randomGif = storedGifs.data[Math.floor(Math.random() * storedGifs.data.length)].images.original.url;
+
+	e.target.textContent = "";
+	e.target.style.backgroundImage = `url(${randomGif})`;
+	e.target.classList.add("has-gif");
+}
+
+function matchButtons() {
 	buttons.forEach((button) => {
-		button.style.display = "none";
-	});
-
-	gif.then((url) => {
-		const img = document.createElement("img");
-		img.src = url;
-		document.body.appendChild(img);
+		button.disabled = true;
+		if (button.dataset.button === select.dataset.select) button.disabled = false;
 	});
 }
 
-function appendSuffix() {
+//<==== HELPER FUNCTIONS ====>
+
+function suffix() {
 	options.forEach((option) => {
 		let suffix = "";
 		suffix = "th";
@@ -36,20 +43,19 @@ function appendSuffix() {
 	});
 }
 
-function matchButtons() {
-	buttons.forEach((button) => {
-		button.disabled = true;
-		if (button.dataset.button == select.dataset.select) button.disabled = false;
-	});
-}
+// <==== Main Program ====>
 
-appendSuffix();
+getGif();
+suffix();
 
 select.addEventListener("change", () => {
-	select.dataset.select = select.value[0];
+	select.dataset.select = select.value[0]; //! this has to change because it's not always a single digit...
 	matchButtons();
 });
 
 buttons.forEach((button) => {
-	button.addEventListener("click", appendGif);
+	button.addEventListener("click", (e) => {
+		if (!e.target.classList.contains("has-gif")) appendGif(e);
+		button.disabled = true;
+	});
 });
