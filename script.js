@@ -22,7 +22,7 @@ function appendGif(e) {
 	e.target.classList.add("has-gif");
 }
 
-function matchButtons() {
+function toggleButton() {
 	buttons.forEach((button) => {
 		button.disabled = button.dataset.button !== select.dataset.select;
 	});
@@ -44,7 +44,12 @@ function suffix() {
 	});
 }
 
-const getRandomGif = () => storedGifs.data[Math.floor(Math.random() * storedGifs.data.length)].images.original.url;
+function getRandomGif() {
+	const gifs = storedGifs.data;
+	const randomIndex = Math.floor(Math.random() * gifs.length);
+	return gifs[randomIndex].images.original.url;
+}
+
 const assignSelectData = () => (select.dataset.select = select.value.replace(/\D/g, ""));
 
 // <==== Main Program ====>
@@ -55,7 +60,7 @@ assignSelectData();
 
 select.addEventListener("change", () => {
 	assignSelectData();
-	matchButtons();
+	toggleButton();
 });
 
 buttons.forEach((button) => {
