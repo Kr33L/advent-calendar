@@ -6,8 +6,6 @@ const API_URL = `https://api.giphy.com/v1/gifs/search?api_key=${KEY}&q=christmas
 
 const storedGifs = JSON.parse(localStorage.getItem("giphyStored"));
 
-const getRandomGif = () => storedGifs.data[Math.floor(Math.random() * storedGifs.data.length)].images.original.url;
-
 // <==== MAIN FUNCTIONS ====>
 
 async function getGif() {
@@ -26,38 +24,44 @@ function appendGif(e) {
 
 function matchButtons() {
 	buttons.forEach((button) => {
-		button.disabled = true;
-		if (button.dataset.button === select.dataset.select) button.disabled = false;
+		button.disabled = button.dataset.button !== select.dataset.select;
 	});
 }
 
 //<==== HELPER FUNCTIONS ====>
 
+function getSuffix(dataValue) {
+	let suffix = "th";
+	if (dataValue == 1 || dataValue == 21) suffix = "st";
+	if (dataValue == 2 || dataValue == 22) suffix = "nd";
+	if (dataValue == 3 || dataValue == 23) suffix = "rd";
+	return suffix;
+}
+
 function suffix() {
 	options.forEach((option) => {
-		let suffix = "";
-		suffix = "th";
-		if (option.textContent == 1 || option.textContent == 21) suffix = "st";
-		if (option.textContent == 2 || option.textContent == 22) suffix = "nd";
-		if (option.textContent == 3 || option.textContent == 23) suffix = "rd";
-
-		option.textContent = option.textContent + suffix + " of December";
+		option.textContent = option.textContent + getSuffix(option.dataset.option) + " of December";
 	});
 }
+
+const getRandomGif = () => storedGifs.data[Math.floor(Math.random() * storedGifs.data.length)].images.original.url;
+const assignSelectData = () => (select.dataset.select = select.value.replace(/\D/g, ""));
 
 // <==== Main Program ====>
 
 getGif();
 suffix();
+assignSelectData();
 
 select.addEventListener("change", () => {
-	select.dataset.select = select.value.replace(/\D/g, "");
+	assignSelectData();
 	matchButtons();
 });
 
 buttons.forEach((button) => {
+	if (button.classList.contains("has-gif")) return;
 	button.addEventListener("click", (e) => {
-		if (!e.target.classList.contains("has-gif")) appendGif(e);
+		appendGif(e);
 		button.disabled = true;
 	});
 });
