@@ -4,19 +4,21 @@ const buttons = document.querySelectorAll("button");
 const KEY = "s9vuPN6Q6PqaIyKPA4cdBFgXlWL5zwrP";
 const API_URL = `https://api.giphy.com/v1/gifs/search?api_key=${KEY}&q=christmas&limit=200`;
 
+const storedGifs = JSON.parse(localStorage.getItem("giphyStored"));
+
+const getRandomGif = () => storedGifs.data[Math.floor(Math.random() * storedGifs.data.length)].images.original.url;
+
 // <==== MAIN FUNCTIONS ====>
 
 async function getGif() {
-	if (localStorage.getItem("giphyStored")) return;
+	if (storedGifs) return;
 	const response = await fetch(`${API_URL}`);
 	const data = await response.json();
 	localStorage.setItem("giphyStored", JSON.stringify(data));
 }
 
 function appendGif(e) {
-	const storedGifs = JSON.parse(localStorage.getItem("giphyStored"));
-	const randomGif = storedGifs.data[Math.floor(Math.random() * storedGifs.data.length)].images.original.url;
-
+	const randomGif = getRandomGif();
 	e.target.textContent = "";
 	e.target.style.backgroundImage = `url(${randomGif})`;
 	e.target.classList.add("has-gif");
@@ -49,7 +51,7 @@ getGif();
 suffix();
 
 select.addEventListener("change", () => {
-	select.dataset.select = select.value[0]; //! this has to change because it's not always a single digit...
+	select.dataset.select = select.value.replace(/\D/g, "");
 	matchButtons();
 });
 
