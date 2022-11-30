@@ -1,16 +1,15 @@
+const key = "s9vuPN6Q6PqaIyKPA4cdBFgXlWL5zwrP";
+const apiUrl = `https://api.giphy.com/v1/gifs/search?api_key=${key}&q=christmas&limit=200`;
 const select = document.querySelector("select");
 const options = document.querySelectorAll("option");
 const buttons = document.querySelectorAll("button");
-const KEY = "s9vuPN6Q6PqaIyKPA4cdBFgXlWL5zwrP";
-const API_URL = `https://api.giphy.com/v1/gifs/search?api_key=${KEY}&q=christmas&limit=200`;
-
-const storedGifs = JSON.parse(localStorage.getItem("giphyStored"));
 
 // <==== MAIN FUNCTIONS ====>
 
 async function getGif() {
-	if (storedGifs) return;
-	const response = await fetch(`${API_URL}`);
+	if (!localStorage.getItem("gifs")) return;
+	const response = await fetch(`${apiUrl}`);
+	if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 	const data = await response.json();
 	localStorage.setItem("giphyStored", JSON.stringify(data));
 }
@@ -45,7 +44,7 @@ function suffix() {
 }
 
 function getRandomGif() {
-	const gifs = storedGifs.data;
+	const gifs = JSON.parse(localStorage.getItem("giphyStored")).data;
 	const randomIndex = Math.floor(Math.random() * gifs.length);
 	return gifs[randomIndex].images.original.url;
 }
@@ -64,9 +63,10 @@ select.addEventListener("change", () => {
 });
 
 buttons.forEach((button) => {
-	if (button.classList.contains("has-gif")) return;
 	button.addEventListener("click", (e) => {
-		appendGif(e);
-		button.disabled = true;
+		if (!button.classList.contains("has-gif")) {
+			appendGif(e);
+			button.disabled = true;
+		}
 	});
 });
